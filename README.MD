@@ -26,12 +26,16 @@ Follow these steps in order:
 
 ### Step 1: Backend Setup
 
-1. Navigate to the `backend` folder:
+1. Make a database in MySQL name "ecom"
+
+2. run `set up.sql` in the database
+
+3. Navigate to the `backend` folder:
    ```bash
    cd backend
    ```
 
-2. Follow all instructions in [backend/README.md](backend/README.md) to:
+4. Follow all instructions in [backend/README.md](backend/README.md) to:
    - Install backend dependencies
    - Configure environment variables
    - Set up the database
@@ -72,10 +76,12 @@ Once the backend is running, navigate to the `frontend` folder:
 ## Quick Start Summary
 
 1.  Install **Flutter** and **MySQL**
-2.  Go to `backend/` and follow its README
-3.  Go to `frontend/` and follow its README
-4.  Start both backend and frontend
-5.  Test the application
+2.  Once MySQL is installed make a database name "ecom"
+3.  run `set up.sql`
+4.  Go to `backend/` and follow its README
+5.  Go to `frontend/` and follow its README
+6.  Start both backend and frontend
+7.  Test the application
 
 ---
 
