@@ -97,5 +97,6 @@ For detailed information about each component:
 ## Notes
 
 - Make sure MySQL is running before starting the backend server
+- Base URL is http://localhost:3000
 - The backend must be running before you can use the Flutter frontend
 - Follow the README files in each folder for specific configuration details
