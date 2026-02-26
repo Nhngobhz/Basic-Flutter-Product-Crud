@@ -117,6 +117,9 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
   }
 
   void _showSuccessDialog() {
+    final w = MediaQuery.of(context).size.width;
+    final bodySize = (w * 0.037).clamp(13.0, 17.0);
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -124,46 +127,49 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
         backgroundColor: const Color(0xFF161616),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: EdgeInsets.all(w * 0.08),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 64,
-                height: 64,
+                width: w * 0.16,
+                height: w * 0.16,
                 decoration: BoxDecoration(
                   color: const Color(0xFF33FF99).withOpacity(0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.check_rounded,
-                  color: Color(0xFF33FF99),
-                  size: 32,
+                  color: const Color(0xFF33FF99),
+                  size: w * 0.08,
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text(
+              SizedBox(height: w * 0.05),
+              Text(
                 'Password Reset!',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: (w * 0.05).clamp(16.0, 22.0),
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: w * 0.02),
+              Text(
                 'Your password has been successfully updated.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFF888888),
-                  fontSize: 14,
+                  color: const Color(0xFF888888),
+                  fontSize: bodySize - 1,
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 28),
+              SizedBox(height: w * 0.07),
               SizedBox(
                 width: double.infinity,
-                height: 48,
+                height: (MediaQuery.of(context).size.height * 0.06).clamp(
+                  44.0,
+                  54.0,
+                ),
                 child: ElevatedButton(
                   onPressed: () => Navigator.pushAndRemoveUntil(
                     context,
@@ -177,11 +183,12 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
+                  child: Text(
                     'Back to Sign In',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
+                      fontSize: bodySize,
                     ),
                   ),
                 ),
@@ -195,64 +202,87 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final w = size.width;
+    final h = size.height;
+
+    final hPad = w * 0.07;
+    final headingSize = (w * 0.095).clamp(28.0, 48.0);
+    final bodySize = (w * 0.037).clamp(13.0, 17.0);
+    final labelSize = (w * 0.032).clamp(11.0, 14.0);
+    final buttonHeight = (h * 0.065).clamp(46.0, 60.0);
+    final fieldVertPad = (h * 0.019).clamp(12.0, 20.0);
+    final topSpace = (h * 0.03).clamp(16.0, 36.0);
+    final sectionGap = (h * 0.04).clamp(24.0, 52.0);
+    final iconSize = (w * 0.14).clamp(44.0, 64.0);
+    // OTP box size: fit 6 boxes with spacing in screen width
+    final otpBoxWidth = ((w - hPad * 2 - 25) / 6).clamp(36.0, 52.0);
+    final otpBoxHeight = (otpBoxWidth * 1.2).clamp(44.0, 62.0);
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: EdgeInsets.symmetric(horizontal: hPad),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 24),
+              SizedBox(height: topSpace),
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Container(
-                  width: 40,
-                  height: 40,
+                  width: w * 0.1,
+                  height: w * 0.1,
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    maxWidth: 48,
+                    minHeight: 36,
+                    maxHeight: 48,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF161616),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: const Color(0xFF2A2A2A)),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back_ios_new_rounded,
                     color: Colors.white,
-                    size: 16,
+                    size: w * 0.04,
                   ),
                 ),
               ),
-              const SizedBox(height: 36),
+              SizedBox(height: sectionGap * 0.9),
               Container(
-                width: 56,
-                height: 56,
+                width: iconSize,
+                height: iconSize,
                 decoration: BoxDecoration(
                   color: const Color(0xFF6C63FF).withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(iconSize * 0.32),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.shield_outlined,
-                  color: Color(0xFF6C63FF),
-                  size: 28,
+                  color: const Color(0xFF6C63FF),
+                  size: iconSize * 0.5,
                 ),
               ),
-              const SizedBox(height: 28),
-              const Text(
+              SizedBox(height: sectionGap * 0.7),
+              Text(
                 'Enter code.',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 38,
+                  fontSize: headingSize,
                   fontWeight: FontWeight.w700,
                   height: 1.15,
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: h * 0.015),
               RichText(
                 text: TextSpan(
-                  style: const TextStyle(
-                    color: Color(0xFF888888),
-                    fontSize: 15,
+                  style: TextStyle(
+                    color: const Color(0xFF888888),
+                    fontSize: bodySize,
                     height: 1.5,
                   ),
                   children: [
@@ -267,13 +297,16 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
-              // OTP boxes
+              SizedBox(height: sectionGap),
+              // OTP boxes — evenly spaced, fully responsive
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(6, (i) => _buildOTPBox(i)),
+                children: List.generate(
+                  6,
+                  (i) => _buildOTPBox(i, otpBoxWidth, otpBoxHeight),
+                ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: h * 0.02),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -281,36 +314,39 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
                     _resendCountdown > 0
                         ? 'Resend code in ${_resendCountdown}s'
                         : "Didn't receive it? ",
-                    style: const TextStyle(
-                      color: Color(0xFF888888),
-                      fontSize: 13,
+                    style: TextStyle(
+                      color: const Color(0xFF888888),
+                      fontSize: labelSize,
                     ),
                   ),
                   if (_resendCountdown == 0)
                     GestureDetector(
                       onTap: _resendOtp,
-                      child: const Text(
+                      child: Text(
                         'Resend',
                         style: TextStyle(
-                          color: Color(0xFF6C63FF),
-                          fontSize: 13,
+                          color: const Color(0xFF6C63FF),
+                          fontSize: labelSize,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                 ],
               ),
-              const SizedBox(height: 36),
+              SizedBox(height: sectionGap),
               Row(
                 children: [
                   Expanded(
                     child: Container(height: 1, color: const Color(0xFF1E1E1E)),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 14),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
                     child: Text(
                       'New password',
-                      style: TextStyle(color: Color(0xFF555555), fontSize: 12),
+                      style: TextStyle(
+                        color: const Color(0xFF555555),
+                        fontSize: labelSize - 1,
+                      ),
                     ),
                   ),
                   Expanded(
@@ -318,7 +354,7 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 28),
+              SizedBox(height: sectionGap * 0.7),
               Form(
                 key: _formKey,
                 child: Column(
@@ -330,13 +366,17 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
                       obscure: _obscureNew,
                       onToggle: () =>
                           setState(() => _obscureNew = !_obscureNew),
+                      labelSize: labelSize,
+                      bodySize: bodySize,
+                      fieldVertPad: fieldVertPad,
+                      w: w,
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Required';
                         if (v.length < 8) return 'At least 8 characters';
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: h * 0.02),
                     _buildPasswordField(
                       controller: _confirmPasswordController,
                       label: 'Confirm Password',
@@ -344,16 +384,20 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
                       obscure: _obscureConfirm,
                       onToggle: () =>
                           setState(() => _obscureConfirm = !_obscureConfirm),
+                      labelSize: labelSize,
+                      bodySize: bodySize,
+                      fieldVertPad: fieldVertPad,
+                      w: w,
                       validator: (v) {
                         if (v != _newPasswordController.text)
                           return 'Passwords do not match';
                         return null;
                       },
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: sectionGap),
                     SizedBox(
                       width: double.infinity,
-                      height: 54,
+                      height: buttonHeight,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _verifyAndReset,
                         style: ElevatedButton.styleFrom(
@@ -375,11 +419,11 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text(
+                            : Text(
                                 'Reset Password',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: bodySize,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -388,7 +432,7 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: sectionGap),
             ],
           ),
         ),
@@ -396,10 +440,10 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
     );
   }
 
-  Widget _buildOTPBox(int index) {
+  Widget _buildOTPBox(int index, double boxWidth, double boxHeight) {
     return SizedBox(
-      width: 46,
-      height: 54,
+      width: boxWidth,
+      height: boxHeight,
       child: TextFormField(
         controller: _otpControllers[index],
         focusNode: _focusNodes[index],
@@ -409,9 +453,9 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
           FilteringTextInputFormatter.digitsOnly,
           LengthLimitingTextInputFormatter(1),
         ],
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontSize: 20,
+          fontSize: (boxWidth * 0.42).clamp(16.0, 22.0),
           fontWeight: FontWeight.w700,
         ),
         onChanged: (val) {
@@ -456,6 +500,10 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
     required String hint,
     required bool obscure,
     required VoidCallback onToggle,
+    required double labelSize,
+    required double bodySize,
+    required double fieldVertPad,
+    required double w,
     String? Function(String?)? validator,
   }) {
     return Column(
@@ -463,9 +511,9 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: Color(0xFFAAAAAA),
-            fontSize: 13,
+          style: TextStyle(
+            color: const Color(0xFFAAAAAA),
+            fontSize: labelSize,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.2,
           ),
@@ -475,14 +523,17 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
           controller: controller,
           obscureText: obscure,
           validator: validator,
-          style: const TextStyle(color: Colors.white, fontSize: 15),
+          style: TextStyle(color: Colors.white, fontSize: bodySize),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: Color(0xFF444444), fontSize: 15),
-            prefixIcon: const Icon(
+            hintStyle: TextStyle(
+              color: const Color(0xFF444444),
+              fontSize: bodySize,
+            ),
+            prefixIcon: Icon(
               Icons.lock_outline_rounded,
-              color: Color(0xFF444444),
-              size: 20,
+              color: const Color(0xFF444444),
+              size: w * 0.05,
             ),
             suffixIcon: IconButton(
               icon: Icon(
@@ -490,7 +541,7 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
                 color: const Color(0xFF555555),
-                size: 20,
+                size: w * 0.05,
               ),
               onPressed: onToggle,
             ),
@@ -520,9 +571,9 @@ class _OtpResetScreenState extends State<OtpResetScreen> {
               borderSide: const BorderSide(color: Color(0xFFFF5555)),
             ),
             errorStyle: const TextStyle(color: Color(0xFFFF5555)),
-            contentPadding: const EdgeInsets.symmetric(
+            contentPadding: EdgeInsets.symmetric(
               horizontal: 18,
-              vertical: 16,
+              vertical: fieldVertPad,
             ),
           ),
         ),

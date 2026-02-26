@@ -6,19 +6,17 @@ const service = require('../services/product.service');
 
 exports.getAll = async (req, res, next) => {
   try {
-    const { page, limit, search, sort_by } = req.query;
+    const { page, limit, search, sortBy } = req.query;
 
-    // normalize/validate query parameters before sending to service
     const pageNum = Number.isNaN(Number(page)) ? 1 : Number(page);
     const limitNum = Number.isNaN(Number(limit)) ? 20 : Number(limit);
     const searchTerm = typeof search === 'string' ? search : '';
-    const sortByTerm = sort_by === 'price' ? 'price' : 'name';
 
     const data = await productService.getProducts(
       pageNum,
       limitNum,
       searchTerm,
-      sortByTerm
+      sortBy || 'name'
     );
 
     res.json(data);
@@ -26,7 +24,6 @@ exports.getAll = async (req, res, next) => {
     next(err);
   }
 };
-
 exports.getById = async (req, res, next) => {
   try {
     const product = await productService.getProductById(req.params.id);

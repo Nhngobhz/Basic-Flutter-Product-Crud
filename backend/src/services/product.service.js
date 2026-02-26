@@ -6,7 +6,19 @@ exports.getProducts = async (page = 1, limit = 20, search = '', sortBy = 'name')
   const offset = (safePage - 1) * safeLimit;
   const safeSearch = typeof search === 'string' ? search : '';
 
-  const orderBy = sortBy === 'price' ? 'price' : 'name';
+  let orderBy = 'name ASC';
+
+switch (sortBy) {
+  case 'price_asc':
+    orderBy = 'price ASC';
+    break;
+  case 'price_desc':
+    orderBy = 'price DESC';
+    break;
+  case 'name':
+  default:
+    orderBy = 'name ASC';
+}
 
   let sql = `SELECT * FROM products`;
   const params = [];
@@ -39,7 +51,13 @@ exports.createProduct = async (data) => {
     `INSERT INTO products
      (name, description, category_id, price, image_url)
      VALUES (?, ?, ?, ?, ?)`,
-    [name, description, category_id, price, image_url]
+    [
+      name,
+      description ?? null,
+      category_id ?? null,
+      price ?? null,
+      image_url ?? null
+    ]
   );
 
   return { message: "Product created" };
@@ -47,34 +65,26 @@ exports.createProduct = async (data) => {
 
 exports.updateProduct = async (id, data) => {
   const { name, description, category_id, price, image_url } = data;
+
   await pool.execute(
     `UPDATE products
-     SET name = ?, description = ?, category_id = ?, price = ?, image_url = ?
+     SET name = ?,
+         description = ?,
+         category_id = ?,
+         price = ?,
+         image_url = ?
      WHERE id = ?`,
-    [name, description, category_id, price, image_url, id]
+    [
+      name,
+      description ?? null,  // 🔥 important
+      category_id ?? null,
+      price ?? null,
+      image_url ?? null,
+      id
+    ]
   );
+
   return { message: "Product updated" };
-};
-
-exports.deleteProduct = async (id) => {
-  await pool.execute(
-    `DELETE FROM products WHERE id = ?`,
-    [id]
-  );
-
-  return { message: "Product deleted" };
-};
-exports.createProduct = async (data) => {
-  const { name, description, category_id, price, image_url } = data;
-
-  await pool.execute(
-    `INSERT INTO products
-     (name, description, category_id, price, image_url)
-     VALUES (?, ?, ?, ?, ?)`,
-    [name, description, category_id, price, image_url]
-  );
-
-  return { message: "Product created" };
 };
 
 exports.deleteProduct = async (id) => {

@@ -31,7 +31,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   String _sortBy = 'name';
   int? _selectedCategoryId;
   double _minPrice = 0;
-  double _maxPrice = 9999;
+  double _maxPrice = 100;
   bool _showFilters = false;
 
   final _scrollCtrl = ScrollController();
@@ -277,9 +277,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
+            SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
                 children: [
                   FilterChipWidget(
                     label: 'All',
@@ -331,7 +332,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
             RangeSlider(
               values: RangeValues(_minPrice, _maxPrice),
               min: 0,
-              max: 9999,
+              max: 100,
               activeColor: AppTheme.accent,
               inactiveColor: AppTheme.border,
               onChanged: (v) => setState(() {

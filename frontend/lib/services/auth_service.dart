@@ -7,11 +7,18 @@ class AuthService {
     required String email,
     required String password,
   }) async {
-    await ApiService.post('/api/auth/signup', {
+    final data = await ApiService.post('/api/auth/signup', {
       'name': username,
       'email': email,
       'password': password,
     });
+
+    final token = data['token'] as String?;
+    if (token == null) {
+      throw ApiException('No token received from server');
+    }
+
+    await ApiService.saveToken(token);
   }
 
   // POST /api/auth/login  → saves token to SharedPreferences

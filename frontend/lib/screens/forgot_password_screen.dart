@@ -52,77 +52,97 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final w = size.width;
+    final h = size.height;
+
+    final hPad = w * 0.07;
+    final headingSize = (w * 0.095).clamp(28.0, 48.0);
+    final bodySize = (w * 0.037).clamp(13.0, 17.0);
+    final labelSize = (w * 0.032).clamp(11.0, 14.0);
+    final buttonHeight = (h * 0.065).clamp(46.0, 60.0);
+    final fieldVertPad = (h * 0.019).clamp(12.0, 20.0);
+    final topSpace = (h * 0.03).clamp(16.0, 36.0);
+    final sectionGap = (h * 0.04).clamp(24.0, 52.0);
+    final iconSize = (w * 0.14).clamp(44.0, 64.0);
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: EdgeInsets.symmetric(horizontal: hPad),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 24),
+              SizedBox(height: topSpace),
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Container(
-                  width: 40,
-                  height: 40,
+                  width: w * 0.1,
+                  height: w * 0.1,
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    maxWidth: 48,
+                    minHeight: 36,
+                    maxHeight: 48,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF161616),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: const Color(0xFF2A2A2A)),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back_ios_new_rounded,
                     color: Colors.white,
-                    size: 16,
+                    size: w * 0.04,
                   ),
                 ),
               ),
-              const SizedBox(height: 36),
+              SizedBox(height: sectionGap * 0.9),
               Container(
-                width: 56,
-                height: 56,
+                width: iconSize,
+                height: iconSize,
                 decoration: BoxDecoration(
                   color: const Color(0xFF6C63FF).withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(iconSize * 0.32),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.lock_reset_rounded,
-                  color: Color(0xFF6C63FF),
-                  size: 28,
+                  color: const Color(0xFF6C63FF),
+                  size: iconSize * 0.5,
                 ),
               ),
-              const SizedBox(height: 28),
-              const Text(
+              SizedBox(height: sectionGap * 0.7),
+              Text(
                 'Reset\npassword.',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 38,
+                  fontSize: headingSize,
                   fontWeight: FontWeight.w700,
                   height: 1.15,
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 12),
-              const Text(
+              SizedBox(height: h * 0.015),
+              Text(
                 "Enter your email and we'll send you a code to reset your password.",
                 style: TextStyle(
-                  color: Color(0xFF888888),
-                  fontSize: 15,
+                  color: const Color(0xFF888888),
+                  fontSize: bodySize,
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 48),
+              SizedBox(height: sectionGap * 1.2),
               Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Email',
                       style: TextStyle(
-                        color: Color(0xFFAAAAAA),
-                        fontSize: 13,
+                        color: const Color(0xFFAAAAAA),
+                        fontSize: labelSize,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.2,
                       ),
@@ -136,17 +156,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         if (!v.contains('@')) return 'Enter a valid email';
                         return null;
                       },
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
+                      style: TextStyle(color: Colors.white, fontSize: bodySize),
                       decoration: InputDecoration(
                         hintText: 'you@example.com',
-                        hintStyle: const TextStyle(
-                          color: Color(0xFF444444),
-                          fontSize: 15,
+                        hintStyle: TextStyle(
+                          color: const Color(0xFF444444),
+                          fontSize: bodySize,
                         ),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.mail_outline_rounded,
-                          color: Color(0xFF444444),
-                          size: 20,
+                          color: const Color(0xFF444444),
+                          size: w * 0.05,
                         ),
                         filled: true,
                         fillColor: const Color(0xFF161616),
@@ -182,16 +202,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                         ),
                         errorStyle: const TextStyle(color: Color(0xFFFF5555)),
-                        contentPadding: const EdgeInsets.symmetric(
+                        contentPadding: EdgeInsets.symmetric(
                           horizontal: 18,
-                          vertical: 16,
+                          vertical: fieldVertPad,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: sectionGap),
                     SizedBox(
                       width: double.infinity,
-                      height: 54,
+                      height: buttonHeight,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _sendOTP,
                         style: ElevatedButton.styleFrom(
@@ -213,11 +233,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text(
+                            : Text(
                                 'Send Reset Code',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: bodySize,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -228,21 +248,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               const Spacer(),
               Padding(
-                padding: const EdgeInsets.only(bottom: 32),
+                padding: EdgeInsets.only(bottom: h * 0.04),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Remember your password? ',
-                      style: TextStyle(color: Color(0xFF888888), fontSize: 14),
+                      style: TextStyle(
+                        color: const Color(0xFF888888),
+                        fontSize: bodySize - 1,
+                      ),
                     ),
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: const Text(
+                      child: Text(
                         'Sign in',
                         style: TextStyle(
-                          color: Color(0xFF6C63FF),
-                          fontSize: 14,
+                          color: const Color(0xFF6C63FF),
+                          fontSize: bodySize - 1,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

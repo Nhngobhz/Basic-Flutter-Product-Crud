@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/api_service.dart';
-import 'sign_in_screen.dart';
+import 'home_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -30,7 +30,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_agreedToTerms) {
-      _showSnack('Please agree to the terms', const Color(0xFF333333));
+      _showSnack(
+        'Please agree to the terms',
+        const Color.fromARGB(255, 255, 255, 255),
+      );
       return;
     }
     setState(() => _isLoading = true);
@@ -41,10 +44,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password: _passwordController.text,
       );
       if (!mounted) return;
-      _showSnack('Account created! Please sign in.', const Color(0xFF6C63FF));
+      _showSnack('Account created! Welcome.', const Color(0xFF6C63FF));
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const SignInScreen()),
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     } on ApiException catch (e) {
       if (!mounted) return;
@@ -67,49 +70,71 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final w = size.width;
+    final h = size.height;
+
+    final hPad = w * 0.07;
+    final headingSize = (w * 0.095).clamp(28.0, 48.0);
+    final bodySize = (w * 0.037).clamp(13.0, 17.0);
+    final labelSize = (w * 0.032).clamp(11.0, 14.0);
+    final buttonHeight = (h * 0.065).clamp(46.0, 60.0);
+    final fieldVertPad = (h * 0.019).clamp(12.0, 20.0);
+    final topSpace = (h * 0.03).clamp(16.0, 36.0);
+    final sectionGap = (h * 0.04).clamp(24.0, 52.0);
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: EdgeInsets.symmetric(horizontal: hPad),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 24),
+              SizedBox(height: topSpace),
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Container(
-                  width: 40,
-                  height: 40,
+                  width: w * 0.1,
+                  height: w * 0.1,
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    maxWidth: 48,
+                    minHeight: 36,
+                    maxHeight: 48,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF161616),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: const Color(0xFF2A2A2A)),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_back_ios_new_rounded,
                     color: Colors.white,
-                    size: 16,
+                    size: w * 0.04,
                   ),
                 ),
               ),
-              const SizedBox(height: 36),
-              const Text(
+              SizedBox(height: sectionGap * 0.9),
+              Text(
                 'Create\naccount.',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 38,
+                  fontSize: headingSize,
                   fontWeight: FontWeight.w700,
                   height: 1.15,
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 12),
-              const Text(
+              SizedBox(height: h * 0.015),
+              Text(
                 'Join us today',
-                style: TextStyle(color: Color(0xFF888888), fontSize: 15),
+                style: TextStyle(
+                  color: const Color(0xFF888888),
+                  fontSize: bodySize,
+                ),
               ),
-              const SizedBox(height: 48),
+              SizedBox(height: sectionGap * 1.2),
               Form(
                 key: _formKey,
                 child: Column(
@@ -119,6 +144,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       label: 'Username',
                       hint: 'johndoe',
                       prefixIcon: Icons.alternate_email_rounded,
+                      fieldVertPad: fieldVertPad,
+                      labelSize: labelSize,
+                      bodySize: bodySize,
+                      w: w,
                       validator: (v) {
                         if (v == null || v.isEmpty)
                           return 'Username is required';
@@ -127,33 +156,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: h * 0.02),
                     _buildField(
                       controller: _emailController,
                       label: 'Email',
                       hint: 'you@example.com',
                       prefixIcon: Icons.mail_outline_rounded,
                       keyboardType: TextInputType.emailAddress,
+                      fieldVertPad: fieldVertPad,
+                      labelSize: labelSize,
+                      bodySize: bodySize,
+                      w: w,
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Email is required';
                         if (!v.contains('@')) return 'Enter a valid email';
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: h * 0.02),
                     _buildField(
                       controller: _passwordController,
                       label: 'Password',
                       hint: '••••••••',
                       prefixIcon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
+                      fieldVertPad: fieldVertPad,
+                      labelSize: labelSize,
+                      bodySize: bodySize,
+                      w: w,
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
                           color: const Color(0xFF555555),
-                          size: 20,
+                          size: w * 0.05,
                         ),
                         onPressed: () => setState(
                           () => _obscurePassword = !_obscurePassword,
@@ -166,9 +203,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: h * 0.01),
                     _buildPasswordStrength(_passwordController.text),
-                    const SizedBox(height: 20),
+                    SizedBox(height: h * 0.025),
                     Row(
                       children: [
                         GestureDetector(
@@ -176,8 +213,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               setState(() => _agreedToTerms = !_agreedToTerms),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            width: 22,
-                            height: 22,
+                            width: w * 0.055,
+                            height: w * 0.055,
+                            constraints: const BoxConstraints(
+                              minWidth: 20,
+                              maxWidth: 26,
+                              minHeight: 20,
+                              maxHeight: 26,
+                            ),
                             decoration: BoxDecoration(
                               color: _agreedToTerms
                                   ? const Color(0xFF6C63FF)
@@ -191,36 +234,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ),
                             child: _agreedToTerms
-                                ? const Icon(
+                                ? Icon(
                                     Icons.check_rounded,
                                     color: Colors.white,
-                                    size: 14,
+                                    size: w * 0.035,
                                   )
                                 : null,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        const Expanded(
+                        SizedBox(width: w * 0.03),
+                        Expanded(
                           child: Text.rich(
                             TextSpan(
                               text: 'I agree to the ',
                               style: TextStyle(
-                                color: Color(0xFF888888),
-                                fontSize: 13,
+                                color: const Color(0xFF888888),
+                                fontSize: labelSize,
                               ),
                               children: [
                                 TextSpan(
                                   text: 'Terms of Service',
                                   style: TextStyle(
-                                    color: Color(0xFF6C63FF),
+                                    color: const Color(0xFF6C63FF),
+                                    fontSize: labelSize,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                TextSpan(text: ' and '),
+                                const TextSpan(text: ' and '),
                                 TextSpan(
                                   text: 'Privacy Policy',
                                   style: TextStyle(
-                                    color: Color(0xFF6C63FF),
+                                    color: const Color(0xFF6C63FF),
+                                    fontSize: labelSize,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -230,37 +275,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: sectionGap),
                     _buildPrimaryButton(
                       label: 'Create Account',
                       isLoading: _isLoading,
                       onTap: _signUp,
+                      height: buttonHeight,
+                      fontSize: bodySize,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: sectionGap),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'Already have an account? ',
-                    style: TextStyle(color: Color(0xFF888888), fontSize: 14),
+                    style: TextStyle(
+                      color: const Color(0xFF888888),
+                      fontSize: bodySize - 1,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: const Text(
+                    child: Text(
                       'Sign in',
                       style: TextStyle(
-                        color: Color(0xFF6C63FF),
-                        fontSize: 14,
+                        color: const Color(0xFF6C63FF),
+                        fontSize: bodySize - 1,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: sectionGap),
             ],
           ),
         ),
@@ -283,6 +333,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       const Color(0xFF33FF99),
     ];
     final labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+    final w = MediaQuery.of(context).size.width;
+    final labelSize = (w * 0.028).clamp(10.0, 13.0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,7 +362,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             labels[strength],
             style: TextStyle(
               color: colors[strength],
-              fontSize: 11,
+              fontSize: labelSize,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -323,6 +375,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     required TextEditingController controller,
     required String label,
     required String hint,
+    required double fieldVertPad,
+    required double labelSize,
+    required double bodySize,
+    required double w,
     IconData? prefixIcon,
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
@@ -334,9 +390,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: Color(0xFFAAAAAA),
-            fontSize: 13,
+          style: TextStyle(
+            color: const Color(0xFFAAAAAA),
+            fontSize: labelSize,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.2,
           ),
@@ -350,12 +406,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
           onChanged: (v) {
             if (label == 'Password') setState(() {});
           },
-          style: const TextStyle(color: Colors.white, fontSize: 15),
+          style: TextStyle(color: Colors.white, fontSize: bodySize),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: Color(0xFF444444), fontSize: 15),
+            hintStyle: TextStyle(
+              color: const Color(0xFF444444),
+              fontSize: bodySize,
+            ),
             prefixIcon: prefixIcon != null
-                ? Icon(prefixIcon, color: const Color(0xFF444444), size: 20)
+                ? Icon(
+                    prefixIcon,
+                    color: const Color(0xFF444444),
+                    size: w * 0.05,
+                  )
                 : null,
             suffixIcon: suffixIcon,
             filled: true,
@@ -384,9 +447,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               borderSide: const BorderSide(color: Color(0xFFFF5555)),
             ),
             errorStyle: const TextStyle(color: Color(0xFFFF5555)),
-            contentPadding: const EdgeInsets.symmetric(
+            contentPadding: EdgeInsets.symmetric(
               horizontal: 18,
-              vertical: 16,
+              vertical: fieldVertPad,
             ),
           ),
         ),
@@ -398,10 +461,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     required String label,
     required bool isLoading,
     required VoidCallback onTap,
+    required double height,
+    required double fontSize,
   }) {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: height,
       child: ElevatedButton(
         onPressed: isLoading ? null : onTap,
         style: ElevatedButton.styleFrom(
@@ -423,9 +488,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               )
             : Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: fontSize,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.2,
                 ),

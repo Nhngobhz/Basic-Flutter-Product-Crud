@@ -5,6 +5,7 @@ import 'screens/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -25,7 +26,7 @@ class NexusApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0A0A0A),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 54, 54, 54),
         fontFamily: 'SF Pro Display',
         colorScheme: const ColorScheme.dark(
           primary: Color(0xFF6C63FF),

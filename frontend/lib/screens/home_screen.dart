@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/product_service.dart';
+import '../services/category_service.dart';
 import '/style/theme.dart';
 import '../widgets/shared.dart';
 import 'sign_in_screen.dart';
@@ -20,6 +21,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<Product> _featuredProducts = [];
   bool _loadingProducts = true;
+
+  int _categoryCount = 0;
+  bool _loadingCategories = true;
+
   final ScrollController _scrollController = ScrollController();
   int _page = 1;
   bool _hasMore = true;
@@ -29,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadFeatured();
+    _loadCategoryCount();
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
@@ -50,41 +56,41 @@ class _HomeScreenState extends State<HomeScreen> {
         limit: 6,
         sortBy: 'name',
       );
-
-      if (mounted) {
-        setState(() {
-          _featuredProducts = products;
-        });
-      }
+      if (mounted) setState(() => _featuredProducts = products);
     } catch (_) {}
 
     if (mounted) setState(() => _loadingProducts = false);
   }
 
+  Future<void> _loadCategoryCount() async {
+    try {
+      final categories = await CategoryService.getAll();
+      if (mounted) {
+        setState(() {
+          _categoryCount = categories.length;
+        });
+      }
+    } catch (_) {}
+    if (mounted) setState(() => _loadingCategories = false);
+  }
+
   Future<void> _loadMore() async {
     if (!_hasMore) return;
-
     setState(() => _loadingMore = true);
-
     _page++;
-
     try {
       final more = await ProductService.getAll(
         page: _page,
         limit: 6,
         sortBy: 'name',
       );
-
       if (more.isEmpty) {
         _hasMore = false;
       } else {
         _featuredProducts.addAll(more);
       }
     } catch (_) {}
-
-    if (mounted) {
-      setState(() => _loadingMore = false);
-    }
+    if (mounted) setState(() => _loadingMore = false);
   }
 
   Future<void> _signOut(BuildContext context) async {
@@ -107,17 +113,19 @@ class _HomeScreenState extends State<HomeScreen> {
           onRefresh: _loadFeatured,
           child: ListView(
             controller: _scrollController,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.05,
+            ),
             children: [
-              const SizedBox(height: 28),
-              _buildHeader(),
-              const SizedBox(height: 32),
-              _buildStats(),
-              const SizedBox(height: 32),
-              _buildNavGrid(),
-              const SizedBox(height: 32),
-              _buildFeaturedProducts(),
-              const SizedBox(height: 32),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.035),
+              _buildHeader(context),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+              _buildStats(context),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+              _buildNavGrid(context),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.04),
+              _buildFeaturedProducts(context),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.04),
             ],
           ),
         ),
@@ -125,7 +133,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    final bodySize = (w * 0.037).clamp(13.0, 17.0);
+    final headingSize = (w * 0.06).clamp(20.0, 30.0);
+    final labelSize = (w * 0.032).clamp(11.0, 14.0);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -134,34 +147,40 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               'Good morning 👋',
-              style: AppTheme.bodySmall.copyWith(fontSize: 13),
+              style: AppTheme.bodySmall.copyWith(fontSize: labelSize),
             ),
             const SizedBox(height: 4),
-            Text('Dashboard', style: AppTheme.headingLarge),
+            Text(
+              'Dashboard',
+              style: AppTheme.headingLarge.copyWith(fontSize: headingSize),
+            ),
           ],
         ),
         GestureDetector(
           onTap: () => _signOut(context),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            padding: EdgeInsets.symmetric(
+              horizontal: w * 0.035,
+              vertical: w * 0.025,
+            ),
             decoration: BoxDecoration(
               color: AppTheme.card,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppTheme.border),
             ),
-            child: const Row(
+            child: Row(
               children: [
                 Icon(
                   Icons.logout_rounded,
                   color: AppTheme.textSecondary,
-                  size: 15,
+                  size: w * 0.038,
                 ),
-                SizedBox(width: 7),
+                SizedBox(width: w * 0.018),
                 Text(
                   'Sign Out',
                   style: TextStyle(
                     color: AppTheme.textSecondary,
-                    fontSize: 13,
+                    fontSize: bodySize - 2,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -173,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStats() {
+  Widget _buildStats(BuildContext context) {
     return Row(
       children: [
         StatCard(
@@ -183,9 +202,9 @@ class _HomeScreenState extends State<HomeScreen> {
           color: AppTheme.accent,
         ),
         const SizedBox(width: 12),
-        const StatCard(
+        StatCard(
           label: 'Categories',
-          value: '—',
+          value: _loadingCategories ? '—' : '$_categoryCount',
           icon: Icons.category_rounded,
           color: AppTheme.success,
         ),
@@ -193,7 +212,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildNavGrid() {
+  Widget _buildNavGrid(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    final labelSize = (w * 0.032).clamp(11.0, 14.0);
+    final subLabelSize = (w * 0.027).clamp(10.0, 13.0);
+
     final items = [
       _NavItem(
         label: 'Products',
@@ -249,20 +272,26 @@ class _HomeScreenState extends State<HomeScreen> {
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.6,
+            crossAxisSpacing: w * 0.03,
+            mainAxisSpacing: w * 0.03,
+            childAspectRatio: (w > 400) ? 1.65 : 1.5,
           ),
           itemCount: items.length,
-          itemBuilder: (_, i) => _NavCard(item: items[i]),
+          itemBuilder: (_, i) => _NavCard(
+            item: items[i],
+            labelSize: labelSize,
+            subLabelSize: subLabelSize,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildFeaturedProducts() {
+  Widget _buildFeaturedProducts(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -275,16 +304,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 16),
-
         if (_loadingProducts)
           Column(
             children: List.generate(
               4,
-              (_) => const Padding(
-                padding: EdgeInsets.only(bottom: 12),
+              (_) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
                 child: ShimmerBox(
                   width: double.infinity,
-                  height: 100,
+                  height: w * 0.25,
                   radius: 16,
                 ),
               ),
@@ -339,7 +367,13 @@ class _NavItem {
 
 class _NavCard extends StatefulWidget {
   final _NavItem item;
-  const _NavCard({required this.item});
+  final double labelSize;
+  final double subLabelSize;
+  const _NavCard({
+    required this.item,
+    required this.labelSize,
+    required this.subLabelSize,
+  });
 
   @override
   State<_NavCard> createState() => _NavCardState();
@@ -350,6 +384,8 @@ class _NavCardState extends State<_NavCard> {
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+
     return GestureDetector(
       onTapDown: (_) => setState(() => _pressed = true),
       onTapUp: (_) {
@@ -360,7 +396,7 @@ class _NavCardState extends State<_NavCard> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         transform: Matrix4.identity()..scale(_pressed ? 0.97 : 1.0),
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(w * 0.04),
         decoration: BoxDecoration(
           color: AppTheme.card,
           borderRadius: BorderRadius.circular(16),
@@ -373,12 +409,16 @@ class _NavCardState extends State<_NavCard> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(w * 0.02),
               decoration: BoxDecoration(
                 color: widget.item.color.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(widget.item.icon, color: widget.item.color, size: 18),
+              child: Icon(
+                widget.item.icon,
+                color: widget.item.color,
+                size: w * 0.045,
+              ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,12 +427,15 @@ class _NavCardState extends State<_NavCard> {
                   widget.item.label,
                   style: AppTheme.bodyMedium.copyWith(
                     fontWeight: FontWeight.w600,
+                    fontSize: widget.labelSize,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   widget.item.subtitle,
-                  style: AppTheme.bodySmall.copyWith(fontSize: 11),
+                  style: AppTheme.bodySmall.copyWith(
+                    fontSize: widget.subLabelSize,
+                  ),
                 ),
               ],
             ),
@@ -411,6 +454,11 @@ class _VerticalProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+    final imageSize = (w * 0.18).clamp(56.0, 80.0);
+    final nameSize = (w * 0.037).clamp(13.0, 16.0);
+    final priceSize = (w * 0.035).clamp(12.0, 15.0);
+
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
@@ -419,7 +467,7 @@ class _VerticalProductCard extends StatelessWidget {
         ),
       ),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(w * 0.035),
         decoration: BoxDecoration(
           color: AppTheme.card,
           borderRadius: BorderRadius.circular(16),
@@ -428,8 +476,8 @@ class _VerticalProductCard extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 70,
-              height: 70,
+              width: imageSize,
+              height: imageSize,
               decoration: BoxDecoration(
                 color: AppTheme.accentDim,
                 borderRadius: BorderRadius.circular(12),
@@ -444,7 +492,7 @@ class _VerticalProductCard extends StatelessWidget {
                     )
                   : const Icon(Icons.inventory_2_rounded),
             ),
-            const SizedBox(width: 14),
+            SizedBox(width: w * 0.035),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -453,14 +501,16 @@ class _VerticalProductCard extends StatelessWidget {
                     product.name,
                     style: AppTheme.bodyMedium.copyWith(
                       fontWeight: FontWeight.w600,
+                      fontSize: nameSize,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '\$${product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.accent,
                       fontWeight: FontWeight.w700,
+                      fontSize: priceSize,
                     ),
                   ),
                 ],

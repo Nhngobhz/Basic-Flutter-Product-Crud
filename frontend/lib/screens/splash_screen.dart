@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Your world, connected.',
+                  'Legally not connected to League of Legends',
                   style: TextStyle(
                     color: Color(0xFF888888),
                     fontSize: 14,

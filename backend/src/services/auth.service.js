@@ -8,20 +8,35 @@ const { sendOTPEmail } = require('../utils/email');
 exports.signup = async (name, email, password) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  let userId;
+
   try {
-    await pool.execute(
+    const [result] = await pool.execute(
       `INSERT INTO users (username, email, password)
        VALUES (?, ?, ?)`,
       [name, email, hashedPassword]
     );
-  } catch (err) {
-    if (err.code === 'ER_DUP_ENTRY') {
-      throw new Error("Email already exists");
-    }
-    throw err;
-  }
 
-  return { message: "User registered successfully" };
+    userId = result.insertId;
+  } catch (err) {
+  if (err.code === 'ER_DUP_ENTRY') {
+    const error = new Error("Email already exists");
+    error.statusCode = 400;
+    throw error;
+  }
+  throw err;
+}
+
+  const token = jwt.sign(
+    { id: userId, email },
+    config.secret,
+    { expiresIn: config.expiresIn }
+  );
+
+  return {
+    message: "User registered successfully",
+    token
+  };
 };
 
 exports.login = async (email, password) => {
@@ -31,7 +46,11 @@ exports.login = async (email, password) => {
   );
 
   const user = rows[0];
-  if (!user) throw new Error("Invalid credentials");
+  if (!user) {
+    const error = new Error("Invalid credentials");
+    error.statusCode = 401;
+    throw error;
+  }
 
   const match = await bcrypt.compare(password, user.password);
   if (!match) throw new Error("Invalid credentials");

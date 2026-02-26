@@ -60,73 +60,104 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final w = size.width;
+    final h = size.height;
+
+    // Responsive scale factors
+    final hPad = w * 0.07;
+    final headingSize = (w * 0.095).clamp(28.0, 48.0);
+    final bodySize = (w * 0.037).clamp(13.0, 17.0);
+    final labelSize = (w * 0.032).clamp(11.0, 14.0);
+    final buttonHeight = (h * 0.065).clamp(46.0, 60.0);
+    final fieldVertPad = (h * 0.019).clamp(12.0, 20.0);
+    final topSpace = (h * 0.075).clamp(40.0, 80.0);
+    final sectionGap = (h * 0.04).clamp(24.0, 52.0);
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: EdgeInsets.symmetric(horizontal: hPad),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 60),
+              SizedBox(height: topSpace),
               Container(
-                width: 44,
-                height: 44,
+                width: w * 0.11,
+                height: w * 0.11,
+                constraints: const BoxConstraints(
+                  minWidth: 36,
+                  maxWidth: 56,
+                  minHeight: 36,
+                  maxHeight: 56,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF6C63FF),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(w * 0.035),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.bolt_rounded,
                   color: Colors.white,
-                  size: 26,
+                  size: w * 0.065,
                 ),
               ),
-              const SizedBox(height: 40),
-              const Text(
+              SizedBox(height: sectionGap),
+              Text(
                 'Welcome\nback.',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 38,
+                  fontSize: headingSize,
                   fontWeight: FontWeight.w700,
                   height: 1.15,
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 12),
-              const Text(
+              SizedBox(height: h * 0.015),
+              Text(
                 'Sign in to continue',
-                style: TextStyle(color: Color(0xFF888888), fontSize: 15),
+                style: TextStyle(
+                  color: const Color(0xFF888888),
+                  fontSize: bodySize,
+                ),
               ),
-              const SizedBox(height: 48),
+              SizedBox(height: sectionGap * 1.2),
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     _buildField(
+                      context: context,
                       controller: _emailController,
                       label: 'Email',
                       hint: 'you@example.com',
                       keyboardType: TextInputType.emailAddress,
+                      fieldVertPad: fieldVertPad,
+                      labelSize: labelSize,
+                      bodySize: bodySize,
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Email is required';
                         if (!v.contains('@')) return 'Enter a valid email';
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: h * 0.02),
                     _buildField(
+                      context: context,
                       controller: _passwordController,
                       label: 'Password',
                       hint: '••••••••',
                       obscureText: _obscurePassword,
+                      fieldVertPad: fieldVertPad,
+                      labelSize: labelSize,
+                      bodySize: bodySize,
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
                           color: const Color(0xFF555555),
-                          size: 20,
+                          size: w * 0.05,
                         ),
                         onPressed: () => setState(
                           () => _obscurePassword = !_obscurePassword,
@@ -139,7 +170,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: h * 0.015),
                     Align(
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
@@ -149,52 +180,57 @@ class _SignInScreenState extends State<SignInScreen> {
                             builder: (_) => const ForgotPasswordScreen(),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Forgot password?',
                           style: TextStyle(
-                            color: Color(0xFF6C63FF),
-                            fontSize: 13,
+                            color: const Color(0xFF6C63FF),
+                            fontSize: labelSize,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: sectionGap),
                     _buildPrimaryButton(
                       label: 'Sign In',
                       isLoading: _isLoading,
                       onTap: _signIn,
+                      height: buttonHeight,
+                      fontSize: bodySize,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 36),
-              _buildDivider(),
-              const SizedBox(height: 40),
+              SizedBox(height: sectionGap * 0.9),
+              _buildDivider(bodySize: bodySize),
+              SizedBox(height: sectionGap),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "Don't have an account? ",
-                    style: TextStyle(color: Color(0xFF888888), fontSize: 14),
+                    style: TextStyle(
+                      color: const Color(0xFF888888),
+                      fontSize: bodySize - 1,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const SignUpScreen()),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Sign up',
                       style: TextStyle(
-                        color: Color(0xFF6C63FF),
-                        fontSize: 14,
+                        color: const Color(0xFF6C63FF),
+                        fontSize: bodySize - 1,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 40),
+              SizedBox(height: sectionGap),
             ],
           ),
         ),
@@ -203,9 +239,13 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Widget _buildField({
+    required BuildContext context,
     required TextEditingController controller,
     required String label,
     required String hint,
+    required double fieldVertPad,
+    required double labelSize,
+    required double bodySize,
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
     Widget? suffixIcon,
@@ -216,9 +256,9 @@ class _SignInScreenState extends State<SignInScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: Color(0xFFAAAAAA),
-            fontSize: 13,
+          style: TextStyle(
+            color: const Color(0xFFAAAAAA),
+            fontSize: labelSize,
             fontWeight: FontWeight.w500,
             letterSpacing: 0.2,
           ),
@@ -229,55 +269,63 @@ class _SignInScreenState extends State<SignInScreen> {
           keyboardType: keyboardType,
           obscureText: obscureText,
           validator: validator,
-          style: const TextStyle(color: Colors.white, fontSize: 15),
-          decoration: _inputDecoration(hint, suffixIcon: suffixIcon),
+          style: TextStyle(color: Colors.white, fontSize: bodySize),
+          decoration: _inputDecoration(
+            hint,
+            suffixIcon: suffixIcon,
+            vertPad: fieldVertPad,
+            bodySize: bodySize,
+          ),
         ),
       ],
     );
   }
 
-  InputDecoration _inputDecoration(String hint, {Widget? suffixIcon}) =>
-      InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Color(0xFF444444), fontSize: 15),
-        suffixIcon: suffixIcon,
-        filled: true,
-        fillColor: const Color(0xFF161616),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF2A2A2A)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF2A2A2A)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFFFF5555)),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFFFF5555)),
-        ),
-        errorStyle: const TextStyle(color: Color(0xFFFF5555)),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 18,
-          vertical: 16,
-        ),
-      );
+  InputDecoration _inputDecoration(
+    String hint, {
+    Widget? suffixIcon,
+    required double vertPad,
+    required double bodySize,
+  }) => InputDecoration(
+    hintText: hint,
+    hintStyle: TextStyle(color: const Color(0xFF444444), fontSize: bodySize),
+    suffixIcon: suffixIcon,
+    filled: true,
+    fillColor: const Color(0xFF161616),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: const BorderSide(color: Color(0xFF2A2A2A)),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: const BorderSide(color: Color(0xFF2A2A2A)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 1.5),
+    ),
+    errorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: const BorderSide(color: Color(0xFFFF5555)),
+    ),
+    focusedErrorBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: const BorderSide(color: Color(0xFFFF5555)),
+    ),
+    errorStyle: const TextStyle(color: Color(0xFFFF5555)),
+    contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: vertPad),
+  );
 
   Widget _buildPrimaryButton({
     required String label,
     required bool isLoading,
     required VoidCallback onTap,
+    required double height,
+    required double fontSize,
   }) {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: height,
       child: ElevatedButton(
         onPressed: isLoading ? null : onTap,
         style: ElevatedButton.styleFrom(
@@ -299,9 +347,9 @@ class _SignInScreenState extends State<SignInScreen> {
               )
             : Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
+                  fontSize: fontSize,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.2,
                 ),
@@ -310,14 +358,17 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _buildDivider() => Row(
+  Widget _buildDivider({required double bodySize}) => Row(
     children: [
       Expanded(child: Container(height: 1, color: const Color(0xFF1E1E1E))),
-      const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Text(
           'or',
-          style: TextStyle(color: Color(0xFF555555), fontSize: 13),
+          style: TextStyle(
+            color: const Color(0xFF555555),
+            fontSize: bodySize - 2,
+          ),
         ),
       ),
       Expanded(child: Container(height: 1, color: const Color(0xFF1E1E1E))),

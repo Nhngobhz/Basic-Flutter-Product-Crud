@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/category_service.dart';
-import '../../style/theme.dart';
+import '/style/theme.dart';
 import '../../widgets/shared.dart';
 
 class CategoryFormScreen extends StatefulWidget {
@@ -14,6 +14,7 @@ class CategoryFormScreen extends StatefulWidget {
 class _CategoryFormScreenState extends State<CategoryFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameCtrl;
+  late final TextEditingController _descCtrl;
   bool _loading = false;
   bool _isEdit = false;
 
@@ -22,27 +23,36 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
     super.initState();
     _isEdit = widget.category != null;
     _nameCtrl = TextEditingController(text: widget.category?.name ?? '');
+    _descCtrl = TextEditingController(text: widget.category?.description ?? '');
   }
 
   @override
   void dispose() {
     _nameCtrl.dispose();
+    _descCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
-
     try {
       if (_isEdit) {
         await CategoryService.update(
           id: widget.category!.id,
           name: _nameCtrl.text.trim(),
+          description: _descCtrl.text.trim().isEmpty
+              ? null
+              : _descCtrl.text.trim(),
         );
         if (mounted) showSnack(context, 'Category updated!', success: true);
       } else {
-        await CategoryService.create(name: _nameCtrl.text.trim());
+        await CategoryService.create(
+          name: _nameCtrl.text.trim(),
+          description: _descCtrl.text.trim().isEmpty
+              ? null
+              : _descCtrl.text.trim(),
+        );
         if (mounted) showSnack(context, 'Category created!', success: true);
       }
       if (mounted) Navigator.pop(context, true);
@@ -55,49 +65,42 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context);
-    final w = mq.size.width;
-    final ts = mq.textScaleFactor;
-
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0A),
+      backgroundColor: AppTheme.bg,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: w * .07),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: mq.size.height * .08), // use relative spacing
-              Container(
-                width: w * .12,
-                height: w * .12,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF6C63FF),
-                  borderRadius: BorderRadius.circular(w * .035),
-                ),
-                child: const Icon(
-                  Icons.bolt_rounded,
-                  color: Colors.white,
-                  size: 26,
-                ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.card,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppTheme.border),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: AppTheme.textSecondary,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    _isEdit ? 'Edit Category' : 'New Category',
+                    style: AppTheme.headingLarge,
+                  ),
+                ],
               ),
-              SizedBox(height: mq.size.height * .05),
-              Text(
-                'Welcome\nback.',
-                style: AppTheme.headingLarge.copyWith(
-                  fontSize: w * .09 * ts, // scale with width/ user font size
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Sign in to continue',
-                style: TextStyle(
-                  color: const Color(0xFF888888),
-                  fontSize: 15 * ts,
-                ),
-              ),
-              const SizedBox(height: 48),
-              Padding(
+            ),
+            Expanded(
+              child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Form(
                   key: _formKey,
@@ -153,6 +156,37 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
                             ? 'Name is required'
                             : null,
                       ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'DESCRIPTION',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _descCtrl,
+                        maxLines: 3,
+                        style: const TextStyle(
+                          color: AppTheme.textPrimary,
+                          fontSize: 14,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: 'Enter description (optional)',
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.only(bottom: 40),
+                            child: Icon(
+                              Icons.notes_rounded,
+                              color: AppTheme.textTertiary,
+                              size: 18,
+                            ),
+                          ),
+                          alignLabelWithHint: true,
+                        ),
+                      ),
                       const Spacer(),
                       AppButton(
                         label: _isEdit ? 'Save Changes' : 'Create Category',
@@ -166,8 +200,8 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

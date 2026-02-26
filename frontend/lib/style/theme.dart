@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppTheme {
   // Colors
-  static const bg = Color(0xFF0A0A0A);
+  static const bg = Color.fromARGB(255, 12, 12, 12);
   static const surface = Color(0xFF111111);
   static const card = Color(0xFF161616);
   static const border = Color(0xFF222222);

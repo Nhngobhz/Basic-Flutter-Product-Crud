@@ -3,19 +3,26 @@ import 'api_service.dart';
 class Category {
   final int id;
   final String name;
+  final String? description;
 
-  const Category({required this.id, required this.name});
+  const Category({required this.id, required this.name, this.description});
 
-  factory Category.fromJson(Map<String, dynamic> json) =>
-      Category(id: json['id'] as int, name: json['name'] as String);
+  factory Category.fromJson(Map<String, dynamic> json) => Category(
+    id: json['id'] as int,
+    name: json['name'] as String,
+    description: json['description'] as String?,
+  );
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name};
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'description': description,
+  };
 }
 
 class CategoryService {
   static const _base = '/api/categories';
 
-  // GET /categories?search=
   static Future<List<Category>> getAll({String search = ''}) async {
     final path = search.isEmpty
         ? _base
@@ -24,23 +31,32 @@ class CategoryService {
     return (data as List).map((e) => Category.fromJson(e)).toList();
   }
 
-  // GET /categories/:id
   static Future<Category> getById(int id) async {
     final data = await ApiService.get('$_base/$id');
     return Category.fromJson(data);
   }
 
-  // POST /categories
-  static Future<void> create({required String name}) async {
-    await ApiService.post(_base, {'name': name}, auth: true);
+  static Future<void> create({
+    required String name,
+    String? description,
+  }) async {
+    await ApiService.post(_base, {
+      'name': name,
+      'description': description,
+    }, auth: true);
   }
 
-  // PUT /categories/:id
-  static Future<void> update({required int id, required String name}) async {
-    await ApiService.put('$_base/$id', {'name': name});
+  static Future<void> update({
+    required int id,
+    required String name,
+    String? description,
+  }) async {
+    await ApiService.put('$_base/$id', {
+      'name': name,
+      'description': description,
+    });
   }
 
-  // DELETE /categories/:id
   static Future<void> delete(int id) async {
     await ApiService.delete('$_base/$id');
   }

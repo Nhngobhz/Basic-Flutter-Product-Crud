@@ -112,16 +112,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 style: AppTheme.bodySmall,
               ),
               const SizedBox(height: 20),
-              _SheetOption(
-                icon: Icons.camera_alt_rounded,
-                label: 'Take Photo',
-                subtitle: 'Use your camera',
-                color: AppTheme.accent,
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickImage(ImageSource.camera);
-                },
-              ),
               const SizedBox(height: 10),
               _SheetOption(
                 icon: Icons.photo_library_rounded,
@@ -374,46 +364,54 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   }
 
   Widget _buildCategoryDropdown() {
-    // build a list of items without duplicate ids
     final seen = <int>{};
-    final items = <DropdownMenuItem<int?>>[
-      const DropdownMenuItem<int?>(
-        value: null,
-        child: Text('None', style: TextStyle(color: AppTheme.textSecondary)),
-      ),
-    ];
+    final items = <DropdownMenuItem<int?>>[];
+
     for (var c in _categories) {
       if (seen.add(c.id)) {
         items.add(DropdownMenuItem<int?>(value: c.id, child: Text(c.name)));
       }
     }
 
-    // only use the selected id if it actually exists in the current items
     int? dropdownValue = _selectedCategoryId;
     if (dropdownValue != null &&
         !items.any((item) => item.value == dropdownValue)) {
       dropdownValue = null;
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppTheme.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.border),
+    return DropdownButtonFormField<int?>(
+      value: dropdownValue,
+      dropdownColor: AppTheme.card,
+      style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+      hint: const Text(
+        'Select category',
+        style: TextStyle(color: AppTheme.textTertiary, fontSize: 14),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<int?>(
-          value: dropdownValue,
-          dropdownColor: AppTheme.card,
-          style: const TextStyle(color: AppTheme.textPrimary, fontSize: 14),
-          isExpanded: true,
-          hint: const Text(
-            'Select category',
-            style: TextStyle(color: AppTheme.textTertiary, fontSize: 14),
-          ),
-          items: items,
-          onChanged: (v) => setState(() => _selectedCategoryId = v),
+      items: items,
+      onChanged: (v) => setState(() => _selectedCategoryId = v),
+      validator: (value) {
+        if (value == null) {
+          return 'Please select a category';
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.accent),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.danger),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.danger),
         ),
       ),
     );
