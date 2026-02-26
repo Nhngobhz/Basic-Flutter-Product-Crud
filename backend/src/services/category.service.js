@@ -5,9 +5,12 @@ exports.getCategories = async (search = '') => {
     `SELECT * FROM categories WHERE name LIKE ? ORDER BY name`,
     [`%${search}%`]
   );
-  return rows;
-};
 
+  return rows.map(c => ({
+    ...c,
+    description: c.description || ''
+  }));
+};
 exports.createCategory = async (data) => {
   const { name, description } = data;
   await pool.execute(
@@ -31,9 +34,14 @@ exports.getCategoryById = async (id) => {
     `SELECT * FROM categories WHERE id = ?`,
     [id]
   );
-  return rows[0] || null;
-};
 
+  if (!rows[0]) return null;
+
+  return {
+    ...rows[0],
+    description: rows[0].description || ''
+  };
+};
 
 exports.deleteCategory = async (id) => {
   await pool.execute(

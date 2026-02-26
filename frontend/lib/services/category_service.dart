@@ -8,9 +8,9 @@ class Category {
   const Category({required this.id, required this.name, this.description});
 
   factory Category.fromJson(Map<String, dynamic> json) => Category(
-    id: json['id'] as int,
-    name: json['name'] as String,
-    description: json['description'] as String?,
+    id: json['id'] ?? 0,
+    name: json['name'] ?? '',
+    description: json['description'],
   );
 
   Map<String, dynamic> toJson() => {

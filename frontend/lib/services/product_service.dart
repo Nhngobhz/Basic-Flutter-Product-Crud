@@ -29,12 +29,12 @@ class Product {
   }
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-    id: json['id'] as int,
-    name: json['name'] as String,
-    description: json['description'] as String?,
-    categoryId: json['category_id'] as int?,
-    price: double.parse(json['price'].toString()),
-    imageUrl: _normalizeImageUrl(json['image_url'] as String?),
+    id: json['id'] ?? 0,
+    name: json['name'] ?? '',
+    description: json['description'],
+    categoryId: json['category_id'],
+    price: double.tryParse(json['price']?.toString() ?? '0') ?? 0,
+    imageUrl: _normalizeImageUrl(json['image_url']),
   );
 
   Map<String, dynamic> toJson() => {

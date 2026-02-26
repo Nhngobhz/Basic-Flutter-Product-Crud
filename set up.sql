@@ -1,25 +1,30 @@
-ALTER DATABASE ecom CHARACTER 
-SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE TABLE users (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	username VARCHAR ( 100 ),
-	email VARCHAR ( 150 ) UNIQUE NOT NULL,
-	PASSWORD VARCHAR ( 255 ) NOT NULL,
-	otp VARCHAR ( 10 ),
-	otp_expiry DATETIME,
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(100),
+    email VARCHAR(150) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    otp VARCHAR(10),
+    otp_expiry DATETIME,
+    token VARCHAR(500) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE TABLE categories ( id INT PRIMARY KEY AUTO_INCREMENT, NAME VARCHAR ( 255 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, description VARCHAR ( 500 ), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP );
+
+CREATE TABLE categories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    description VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE products (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	NAME VARCHAR ( 255 ) CHARACTER 
-	SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-	description VARCHAR ( 500 ),
-	category_id INT,
-	price DECIMAL ( 10, 2 ),
-	image_url VARCHAR ( 255 ),
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY ( category_id ) REFERENCES categories ( id ) 
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    description VARCHAR(500),
+    category_id INT,
+    price DECIMAL(10,2),
+    image_url VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 INSERT INTO `categories` ( `id`, `name`, `description`, `created_at` )
 VALUES
